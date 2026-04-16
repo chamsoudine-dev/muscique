@@ -9,7 +9,10 @@ class UIController {
             navItems: document.querySelectorAll('.nav-item'),
             views: document.querySelectorAll('.view'),
             bpmInput: document.getElementById('bpm-input'),
-            grid: document.getElementById('sequencer-grid'),
+            sidebar: document.getElementById('tracks-sidebar'),
+            arrangement: document.getElementById('arrangement-area'),
+            playhead: document.getElementById('playhead'),
+            ruler: document.getElementById('time-ruler'),
             canvas: document.getElementById('oscilloscope'),
             learnBtn: document.getElementById('learn-btn'),
             libraryView: document.getElementById('view-library'),
@@ -89,7 +92,7 @@ class UIController {
         });
 
         window.addEventListener('step-changed', (e) => {
-            this.updateGridActiveStep(e.detail.step);
+            this.updateTimelinePlayhead(e.detail.step);
         });
     }
 
@@ -101,47 +104,48 @@ class UIController {
     }
 
     createGrid() {
-        const instruments = ['Kick', 'Snare', 'Hi-Hat', 'Synth Loop'];
+        const instruments = ['Kick Drum', 'Snare 1', 'Main Synth', 'Bassline', 'Vocals (AI)'];
         
-        instruments.forEach((name, i) => {
-            const lane = document.createElement('div');
-            lane.className = 'track-lane';
-            
-            const info = document.createElement('div');
-            info.className = 'track-info';
-            info.innerText = name;
-            
-            const stepsContainer = document.createElement('div');
-            stepsContainer.className = 'steps';
-            
-            const trackState = { name, steps: new Array(16).fill(false) };
-            
-            for (let s = 0; s < 16; s++) {
-                const step = document.createElement('div');
-                step.className = 'step';
-                step.addEventListener('click', () => {
-                    trackState.steps[s] = !trackState.steps[s];
-                    step.classList.toggle('active');
-                    // Mock sound trigger on click
-                    if (trackState.steps[s]) engine.triggerSynth(200 + (i * 100));
-                });
-                stepsContainer.appendChild(step);
-            }
-            
-             lane.appendChild(info);
-            lane.appendChild(stepsContainer);
-            this.dom.grid.appendChild(lane);
-            
-            this.createMixerChannel(name);
+        // Setup Ruler
+        for(let i=1; i<20; i++) {
+            const mark = document.createElement('div');
+            mark.className = 'ruler-mark';
+            mark.style.left = `${(i-1) * 400}px`;
+            mark.innerText = i;
+            this.dom.ruler.appendChild(mark);
+        }
 
-            // Register track in engine
-            engine.tracks.push({
-                steps: trackState.steps,
-                trigger: (time) => {
-                    // Very basic sound for now
-                    engine.triggerSynth(100 + (i * 50));
-                }
-            });
+        instruments.forEach((name, i) => {
+            this.addTrackToTimeline(name, i);
+        });
+    }
+
+    addTrackToTimeline(name, index) {
+        // Sidebar header
+        const header = document.createElement('div');
+        header.className = 'track-lane-header';
+        header.innerHTML = `<h4>${name}</h4><div class="track-controls"><button>M</button><button>S</button></div>`;
+        this.dom.sidebar.appendChild(header);
+
+        // Arrangement Lane
+        const lane = document.createElement('div');
+        lane.className = 'arrangement-lane';
+        
+        // Add a mock clip
+        const clip = document.createElement('div');
+        clip.className = 'clip';
+        clip.style.left = `${Math.random() * 800}px`;
+        clip.style.width = '300px';
+        clip.innerText = `CLIP ${index+1}`;
+        lane.appendChild(clip);
+
+        this.dom.arrangement.appendChild(lane);
+        this.createMixerChannel(name);
+
+        // Register track in engine
+        engine.tracks.push({
+            steps: new Array(16).fill(false),
+            trigger: (time) => { engine.triggerSynth(80 + (index * 40)); }
         });
     }
 
@@ -160,32 +164,17 @@ class UIController {
 
     addStemsToSequencer() {
         const stems = ['VOC_STEM', 'DRUM_STEM', 'BASS_STEM', 'INST_STEM'];
-        stems.forEach(name => {
-            // Logic to add rows to grid dynamically
-            const lane = document.createElement('div');
-            lane.className = 'track-lane ai-stem';
-            lane.innerHTML = `<div class="track-info" style="color:var(--primary)">${name}</div><div class="steps"></div>`;
-            const stepsDiv = lane.querySelector('.steps');
-            for(let i=0; i<16; i++) {
-                const s = document.createElement('div');
-                s.className = 'step';
-                stepsDiv.appendChild(s);
-            }
-            this.dom.grid.prepend(lane);
-            this.createMixerChannel(name);
+        stems.forEach((name, i) => {
+            this.addTrackToTimeline(name, i);
         });
         this.switchView('view-sequencer');
     }
 
-    updateGridActiveStep(stepIndex) {
-        const lanes = this.dom.grid.querySelectorAll('.track-lane');
-        lanes.forEach(lane => {
-            const steps = lane.querySelectorAll('.step');
-            steps.forEach((s, i) => {
-                if (i === stepIndex) s.style.border = '1px solid white';
-                else s.style.border = 'none';
-            });
-        });
+    updateTimelinePlayhead(stepIndex) {
+        const beatWidth = 100; // Match CSS grid line frequency
+        const stepWidth = beatWidth / 4;
+        const x = stepIndex * stepWidth;
+        this.dom.playhead.style.left = `${x}px`;
     }
 
     animateVisualizer() {

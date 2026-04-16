@@ -63,14 +63,22 @@
             <!-- Main Workspace -->
             <section class="workspace">
                 <div id="view-sequencer" class="view active">
-                    <div class="view-header">
-                        <h2>Séquenceur de Patterns</h2>
-                        <div class="view-tools">
-                            <button class="tool-btn" id="add-track">+ Ajouter Piste</button>
+                    <div class="timeline-container">
+                        <div class="timeline-header">
+                            <div class="track-header-top">Pistes</div>
+                            <div class="time-ruler" id="time-ruler">
+                                <!-- Generated time marks -->
+                            </div>
                         </div>
-                    </div>
-                    <div id="sequencer-grid" class="grid-container">
-                        <!-- Tracks will be generated here -->
+                        <div class="timeline-content">
+                            <div class="tracks-sidebar" id="tracks-sidebar">
+                                <!-- Track names -->
+                            </div>
+                            <div class="arrangement-area" id="arrangement-area">
+                                <div id="playhead"></div>
+                                <!-- Clips and tracks lanes -->
+                            </div>
+                        </div>
                     </div>
                 </div>
 
