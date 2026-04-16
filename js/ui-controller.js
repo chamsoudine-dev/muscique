@@ -72,6 +72,22 @@ class UIController {
             pad.addEventListener('mouseleave', () => pad.classList.remove('active'));
         });
 
+        // AI Lab Upload
+        const songUpload = document.getElementById('song-upload');
+        const aiProgress = document.getElementById('ai-progress');
+        
+        songUpload.addEventListener('change', (e) => {
+            if (e.target.files.length > 0) {
+                aiProgress.classList.remove('hidden');
+                // Simulate AI processing
+                setTimeout(() => {
+                    aiProgress.classList.add('hidden');
+                    alert("Décomposition terminée ! 4 pistes ont été générées : VOCAL, DRUMS, BASS, INSTRUMENTAL.");
+                    this.addStemsToSequencer();
+                }, 5000);
+            }
+        });
+
         window.addEventListener('step-changed', (e) => {
             this.updateGridActiveStep(e.detail.step);
         });
@@ -140,6 +156,25 @@ class UIController {
             <div class="pan-knob knob" style="width:30px; height:30px;"></div>
         `;
         document.getElementById('mixer-channels').appendChild(chan);
+    }
+
+    addStemsToSequencer() {
+        const stems = ['VOC_STEM', 'DRUM_STEM', 'BASS_STEM', 'INST_STEM'];
+        stems.forEach(name => {
+            // Logic to add rows to grid dynamically
+            const lane = document.createElement('div');
+            lane.className = 'track-lane ai-stem';
+            lane.innerHTML = `<div class="track-info" style="color:var(--primary)">${name}</div><div class="steps"></div>`;
+            const stepsDiv = lane.querySelector('.steps');
+            for(let i=0; i<16; i++) {
+                const s = document.createElement('div');
+                s.className = 'step';
+                stepsDiv.appendChild(s);
+            }
+            this.dom.grid.prepend(lane);
+            this.createMixerChannel(name);
+        });
+        this.switchView('view-sequencer');
     }
 
     updateGridActiveStep(stepIndex) {

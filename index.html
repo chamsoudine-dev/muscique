@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>MUSCIQ Studio | Mobile Music Production</title>
-    <meta name="description" content="Studio de production musicale mobile professionnel. Créez des instrus, synthétiseurs et beats directement dans votre navigateur.">
+    <title>MED-KING | Ultimate Mobile Studio</title>
+    <meta name="description" content="MED-KING Studio : La station de production musicale mobile de nouvelle génération. Décomposition d'IA, synthèse avancée et construction d'instruments.">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
@@ -13,10 +13,10 @@
 <body class="dark-theme">
     <div id="app">
         <!-- Header / Transport -->
-        <header class="studio-header">
+        <header class="studio-header premium">
             <div class="logo">
-                <span class="logo-icon">V</span>
-                <h1>MUSCIQ<span>STUDIO</span></h1>
+                <span class="logo-icon premium-gold">M</span>
+                <h1>MED-KING<span>PREMIUM</span></h1>
             </div>
             <div class="transport-controls">
                 <button id="play-btn" class="ctrl-btn" title="Play/Stop">
@@ -51,7 +51,11 @@
                     </button>
                     <button class="nav-item" data-view="fx">
                         <i class="icon-fx"></i>
-                        <span>Effets Rack</span>
+                        <span>Mixer/FX</span>
+                    </button>
+                    <button class="nav-item premium-feature" data-view="ai-lab">
+                        <i class="icon-ai"></i>
+                        <span>AI Lab</span>
                     </button>
                 </nav>
             </aside>
@@ -100,23 +104,84 @@
                     </div>
                 </div>
 
-                <div id="view-synth" class="view">
+                <div id="view-ai-lab" class="view">
+                    <div class="ai-container">
+                        <div class="ai-header">
+                            <h2>Laboratoire d'IA MED-KING</h2>
+                            <p>Décomposez des morceaux ou apprenez de nouveaux styles.</p>
+                        </div>
+                        <div class="ai-tools-grid">
+                            <div class="ai-card" id="stem-separator">
+                                <div class="ai-card-icon">🌪️</div>
+                                <h3>Décomposition de Morceau</h3>
+                                <p>Séparez une chanson en 4 pistes : Voix, Batterie, Basse, Mélodie.</p>
+                                <input type="file" id="song-upload" accept="audio/*" hidden>
+                                <button class="ai-btn" onclick="document.getElementById('song-upload').click()">Importer un Morceau</button>
+                                <div id="ai-progress" class="hidden">
+                                    <div class="progress-bar"><span></span></div>
+                                    <p>Analyse des fréquences et séparation IA...</p>
+                                </div>
+                            </div>
+                            <div class="ai-card" id="style-learner">
+                                <div class="ai-card-icon">🧠</div>
+                                <h3>Apprentissage de Style</h3>
+                                <p>Analysez une boucle pour extraire sa Gamme, son BPM et son Groove.</p>
+                                <button class="ai-btn secondary">Analyser Loop</button>
+                            </div>
+                        </div>
+                        <div class="stems-output hidden" id="stems-results">
+                            <!-- Visual channels for decomposed audio -->
+                        </div>
+                    </div>
+                </div>
                     <div class="synth-engine">
                         <div class="visualizer-container">
                             <canvas id="oscilloscope"></canvas>
                         </div>
                         <div class="controls-grid">
-                            <!-- OSC Controls -->
+                            <!-- ADVANCED OSC Controls -->
                             <div class="control-group">
-                                <h3>Oscillateur</h3>
+                                <h3>Oscillateurs Expert</h3>
                                 <div class="knob-row">
                                     <div class="knob-container">
-                                        <div class="knob" id="osc-wave"></div>
-                                        <span>Wave</span>
+                                        <div class="knob" id="osc1-wave"></div>
+                                        <span>Osc 1</span>
                                     </div>
                                     <div class="knob-container">
-                                        <div class="knob" id="osc-detune"></div>
-                                        <span>Detune</span>
+                                        <div class="knob" id="osc2-wave"></div>
+                                        <span>Osc 2</span>
+                                    </div>
+                                    <div class="knob-container">
+                                        <div class="knob" id="osc-mix"></div>
+                                        <span>Mix</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- Filter Section -->
+                            <div class="control-group">
+                                <h3>Filtre Analogique</h3>
+                                <div class="knob-row">
+                                    <div class="knob-container">
+                                        <div class="knob" id="filter-freq"></div>
+                                        <span>Cutoff</span>
+                                    </div>
+                                    <div class="knob-container">
+                                        <div class="knob" id="filter-res"></div>
+                                        <span>Res.</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- Modulation -->
+                            <div class="control-group">
+                                <h3>LFO / Modulation</h3>
+                                <div class="knob-row">
+                                    <div class="knob-container">
+                                        <div class="knob" id="lfo-rate"></div>
+                                        <span>Vitesse</span>
+                                    </div>
+                                    <div class="knob-container">
+                                        <div class="knob" id="lfo-depth"></div>
+                                        <span>Profondeur</span>
                                     </div>
                                 </div>
                             </div>
@@ -124,10 +189,10 @@
                             <div class="control-group">
                                 <h3>Enveloppe (ADSR)</h3>
                                 <div class="sliders">
-                                    <div class="slider-box"><input type="range" orient="vertical" id="env-a"><span>A</span></div>
-                                    <div class="slider-box"><input type="range" orient="vertical" id="env-d"><span>D</span></div>
-                                    <div class="slider-box"><input type="range" orient="vertical" id="env-s"><span>S</span></div>
-                                    <div class="slider-box"><input type="range" orient="vertical" id="env-r"><span>R</span></div>
+                                    <div class="slider-box"><input type="range" orient="vertical" id="env-a" value="10"><span>A</span></div>
+                                    <div class="slider-box"><input type="range" orient="vertical" id="env-d" value="20"><span>D</span></div>
+                                    <div class="slider-box"><input type="range" orient="vertical" id="env-s" value="50"><span>S</span></div>
+                                    <div class="slider-box"><input type="range" orient="vertical" id="env-r" value="30"><span>R</span></div>
                                 </div>
                             </div>
                         </div>
