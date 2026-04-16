@@ -16,7 +16,11 @@ class UIController {
             canvas: document.getElementById('oscilloscope'),
             learnBtn: document.getElementById('learn-btn'),
             libraryView: document.getElementById('view-library'),
-            closeLibrary: document.querySelector('.close-modal')
+            closeLibrary: document.querySelector('.close-modal'),
+            envA: document.getElementById('env-a'),
+            envD: document.getElementById('env-d'),
+            envS: document.getElementById('env-s'),
+            envR: document.getElementById('env-r')
         };
 
         this.ctx2d = this.dom.canvas.getContext('2d');
@@ -90,6 +94,20 @@ class UIController {
                 }, 5000);
             }
         });
+
+        // Expert Knobs Interaction
+        this.initKnobs();
+
+        // ADSR Sliders
+        const updateADSR = () => {
+            engine.synthSettings.adsr = {
+                a: this.dom.envA.value / 100,
+                d: this.dom.envD.value / 100,
+                s: this.dom.envS.value / 100,
+                r: this.dom.envR.value / 50
+            };
+        };
+        [this.dom.envA, this.dom.envD, this.dom.envS, this.dom.envR].forEach(s => s.addEventListener('input', updateADSR));
 
         window.addEventListener('step-changed', (e) => {
             this.updateTimelinePlayhead(e.detail.step);
@@ -175,6 +193,65 @@ class UIController {
         const stepWidth = beatWidth / 4;
         const x = stepIndex * stepWidth;
         this.dom.playhead.style.left = `${x}px`;
+    }
+
+    initKnobs() {
+        const knobConfigs = {
+            'filter-freq': { param: 'filterFreq', min: 20, max: 10000 },
+            'filter-res': { param: 'filterRes', min: 0, max: 20 },
+            'lfo-rate': { param: 'lfoRate', min: 0.1, max: 20 },
+            'lfo-depth': { param: 'lfoDepth', min: 0, max: 1 },
+            'osc-mix': { param: 'oscMix', min: 0, max: 1 }
+        };
+
+        Object.keys(knobConfigs).forEach(id => {
+            const el = document.getElementById(id);
+            if (!el) return;
+            
+            let isDragging = false;
+            let startY = 0;
+            let startVal = engine.synthSettings[knobConfigs[id].param];
+
+            el.addEventListener('mousedown', (e) => {
+                isDragging = true;
+                startY = e.clientY;
+                startVal = engine.synthSettings[knobConfigs[id].param];
+                document.body.style.cursor = 'ns-resize';
+            });
+
+            window.addEventListener('mousemove', (e) => {
+                if (!isDragging) return;
+                const delta = (startY - e.clientY) / 100;
+                const config = knobConfigs[id];
+                let newVal = startVal + delta * (config.max - config.min);
+                newVal = Math.max(config.min, Math.min(config.max, newVal));
+                
+                engine.synthSettings[config.param] = newVal;
+                // Visual rotation
+                const rotation = ((newVal - config.min) / (config.max - config.min)) * 270 - 135;
+                el.style.transform = `rotate(${rotation}deg)`;
+            });
+
+            window.addEventListener('mouseup', () => {
+                isDragging = false;
+                document.body.style.cursor = 'default';
+            });
+        });
+
+        // Wave Cycling
+        const waves = ['sawtooth', 'square', 'sine', 'triangle'];
+        ['osc1-wave', 'osc2-wave'].forEach(id => {
+            const el = document.getElementById(id);
+            el.addEventListener('click', () => {
+                const setting = id === 'osc1-wave' ? 'osc1Wave' : 'osc2Wave';
+                const currentIndex = waves.indexOf(engine.synthSettings[setting]);
+                const nextIndex = (currentIndex + 1) % waves.length;
+                engine.synthSettings[setting] = waves[nextIndex];
+                el.setAttribute('data-wave', waves[nextIndex]);
+                // Visual cue
+                el.style.borderColor = nextIndex % 2 === 0 ? 'var(--primary)' : 'var(--secondary)';
+            });
+        });
     }
 
     animateVisualizer() {
