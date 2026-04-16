@@ -38,23 +38,23 @@
             <aside class="module-sidebar">
                 <nav>
                     <button class="nav-item active" data-view="sequencer">
-                        <i class="icon-grid"></i>
-                        <span>Séquenceur</span>
+                        <span class="nav-icon">📅</span>
+                        <span>Timeline</span>
                     </button>
                     <button class="nav-item" data-view="synth">
-                        <i class="icon-synth"></i>
-                        <span>Synthétiseur</span>
+                        <span class="nav-icon">🎹</span>
+                        <span>Synth Pro</span>
                     </button>
                     <button class="nav-item" data-view="sampler">
-                        <i class="icon-drum"></i>
-                        <span>Drum Kit</span>
+                        <span class="nav-icon">🥁</span>
+                        <span>Pads/Drums</span>
                     </button>
                     <button class="nav-item" data-view="fx">
-                        <i class="icon-fx"></i>
+                        <span class="nav-icon">🎚️</span>
                         <span>Mixer/FX</span>
                     </button>
                     <button class="nav-item premium-feature" data-view="ai-lab">
-                        <i class="icon-ai"></i>
+                        <span class="nav-icon">🤖</span>
                         <span>AI Lab</span>
                     </button>
                 </nav>
@@ -205,7 +205,9 @@
                             </div>
                         </div>
                         <div class="keyboard-container">
-                            <div id="piano-roll"></div>
+                            <div id="piano-keys" class="piano-roll">
+                                <!-- Generated keys -->
+                            </div>
                         </div>
                     </div>
                 </div>

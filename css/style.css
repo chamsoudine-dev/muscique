@@ -294,7 +294,20 @@ body {
     padding: 0 10px;
     font-size: 0.7rem;
     font-weight: bold;
-    cursor: move;
+    cursor: grab;
+    overflow: hidden;
+}
+
+.clip:active { cursor: grabbing; }
+
+.clip-handle {
+    position: absolute;
+    right: 0;
+    top: 0;
+    width: 10px;
+    height: 100%;
+    background: rgba(255,255,255,0.2);
+    cursor: ew-resize;
 }
 
 .clip::after {
@@ -480,6 +493,51 @@ input[type=range][orient=vertical] {
     display: flex;
     justify-content: space-between;
 }
+
+/* --- Piano Keyboard --- */
+.keyboard-container {
+    height: 180px;
+    margin-top: 30px;
+    background: #000;
+    padding: 10px;
+    border-radius: 8px;
+    overflow-x: auto;
+}
+
+.piano-roll {
+    display: flex;
+    height: 100%;
+    position: relative;
+    width: fit-content;
+}
+
+.key {
+    background: white;
+    border: 1px solid #ccc;
+    width: 40px;
+    height: 100%;
+    border-radius: 0 0 5px 5px;
+    cursor: pointer;
+    z-index: 1;
+    transition: background 0.1s;
+}
+
+.key.black {
+    background: #1a1a2e;
+    width: 26px;
+    height: 60%;
+    margin-left: -13px;
+    margin-right: -13px;
+    z-index: 2;
+    border: none;
+}
+
+.key:active, .key.active {
+    background: var(--primary);
+    box-shadow: 0 0 15px var(--primary-glow);
+}
+
+.nav-icon { margin-bottom: 5px; font-size: 1.4rem; }
 
 .library-body {
     padding: 30px;

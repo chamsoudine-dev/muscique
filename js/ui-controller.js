@@ -20,12 +20,14 @@ class UIController {
             envA: document.getElementById('env-a'),
             envD: document.getElementById('env-d'),
             envS: document.getElementById('env-s'),
-            envR: document.getElementById('env-r')
+            envR: document.getElementById('env-r'),
+            piano: document.getElementById('piano-keys')
         };
 
         this.ctx2d = this.dom.canvas.getContext('2d');
         this.setupListeners();
         this.createGrid();
+        this.createPiano();
         this.animateVisualizer();
     }
 
@@ -122,7 +124,14 @@ class UIController {
     }
 
     createGrid() {
-        const instruments = ['Kick Drum', 'Snare 1', 'Main Synth', 'Bassline', 'Vocals (AI)'];
+        const instruments = [
+            { name: 'Drums / Batterie', icon: '🥁' },
+            { name: 'Grand Piano', icon: '🎹' },
+            { name: 'Electric Guitar', icon: '🎸' },
+            { name: 'Pan Flute', icon: '🎋' },
+            { name: 'Whistle / Sifflet', icon: '🌬️' },
+            { name: 'Tam-Tam / Perc.', icon: '🪘' }
+        ];
         
         // Setup Ruler
         for(let i=1; i<20; i++) {
@@ -133,38 +142,99 @@ class UIController {
             this.dom.ruler.appendChild(mark);
         }
 
-        instruments.forEach((name, i) => {
-            this.addTrackToTimeline(name, i);
+        instruments.forEach((inst, i) => {
+            this.addTrackToTimeline(`${inst.icon} ${inst.name}`, i);
         });
     }
 
     addTrackToTimeline(name, index) {
-        // Sidebar header
         const header = document.createElement('div');
         header.className = 'track-lane-header';
         header.innerHTML = `<h4>${name}</h4><div class="track-controls"><button>M</button><button>S</button></div>`;
         this.dom.sidebar.appendChild(header);
 
-        // Arrangement Lane
         const lane = document.createElement('div');
         lane.className = 'arrangement-lane';
         
-        // Add a mock clip
         const clip = document.createElement('div');
         clip.className = 'clip';
         clip.style.left = `${Math.random() * 800}px`;
         clip.style.width = '300px';
-        clip.innerText = `CLIP ${index+1}`;
+        clip.innerHTML = `<span>CLIP_${index+1}</span><div class="clip-handle"></div>`;
+        
+        this.initClipInteraction(clip);
         lane.appendChild(clip);
 
         this.dom.arrangement.appendChild(lane);
         this.createMixerChannel(name);
 
-        // Register track in engine
         engine.tracks.push({
             steps: new Array(16).fill(false),
             trigger: (time) => { engine.triggerSynth(80 + (index * 40)); }
         });
+    }
+
+    initClipInteraction(clip) {
+        let isDragging = false;
+        let isResizing = false;
+        let startX, startLeft, startWidth;
+
+        clip.addEventListener('mousedown', (e) => {
+            if (e.target.className === 'clip-handle') {
+                isResizing = true;
+            } else {
+                isDragging = true;
+            }
+            startX = e.clientX;
+            startLeft = parseInt(clip.style.left) || 0;
+            startWidth = parseInt(clip.style.width) || 100;
+        });
+
+        window.addEventListener('mousemove', (e) => {
+            if (isDragging) {
+                const dx = e.clientX - startX;
+                clip.style.left = `${Math.max(0, startLeft + dx)}px`;
+            }
+            if (isResizing) {
+                const dx = e.clientX - startX;
+                clip.style.width = `${Math.max(20, startWidth + dx)}px`;
+            }
+        });
+
+        window.addEventListener('mouseup', () => {
+            isDragging = false;
+            isResizing = false;
+        });
+    }
+
+    createPiano() {
+        const notes = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'];
+        const octaves = [2, 3, 4];
+        
+        octaves.forEach(oct => {
+            notes.forEach(note => {
+                const key = document.createElement('div');
+                const isBlack = note.includes('#');
+                key.className = `key ${isBlack ? 'black' : 'white'}`;
+                key.dataset.note = `${note}${oct}`;
+                
+                key.addEventListener('mousedown', () => {
+                    key.classList.add('active');
+                    const freq = this.noteToFreq(note, oct);
+                    engine.triggerSynth(freq);
+                });
+                key.addEventListener('mouseup', () => key.classList.remove('active'));
+                key.addEventListener('mouseleave', () => key.classList.remove('active'));
+                
+                this.dom.piano.appendChild(key);
+            });
+        });
+    }
+
+    noteToFreq(note, octave) {
+        const notes = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'];
+        const n = notes.indexOf(note);
+        return 440 * Math.pow(2, (n + (octave - 4) * 12) / 12);
     }
 
     createMixerChannel(name) {
