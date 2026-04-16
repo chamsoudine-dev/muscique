@@ -408,7 +408,79 @@ input[type=range][orient=vertical] {
 .lesson h3 { color: var(--secondary); margin-bottom: 10px; }
 .lesson p { margin-bottom: 15px; }
 
-/* Status Bar */
+/* --- Sampler Pads --- */
+.sampler-container {
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.pads-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 15px;
+    width: 100%;
+    max-width: 500px;
+}
+
+.pad {
+    aspect-ratio: 1;
+    background: var(--bg-accent);
+    border: 1px solid var(--glass-border);
+    border-radius: 8px;
+    display: flex;
+    align-items: flex-end;
+    padding: 10px;
+    cursor: pointer;
+    transition: all 0.1s;
+    box-shadow: 0 4px 0 rgba(0,0,0,0.5);
+    user-select: none;
+}
+
+.pad:active, .pad.active {
+    background: var(--secondary);
+    box-shadow: 0 0 20px var(--secondary-glow);
+    transform: translateY(2px);
+}
+
+.pad span {
+    font-size: 0.6rem;
+    font-weight: 800;
+    color: var(--text-dim);
+    pointer-events: none;
+}
+
+.pad.active span { color: white; }
+
+/* --- Mixer --- */
+.channels-container {
+    display: flex;
+    gap: 20px;
+    overflow-x: auto;
+    padding: 20px 0;
+}
+
+.mixer-channel {
+    flex: 0 0 80px;
+    background: var(--bg-accent);
+    border-radius: 12px;
+    padding: 15px 10px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 15px;
+}
+
+.fader-box {
+    height: 150px;
+}
+
+.channel-name {
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    color: var(--secondary);
+}
 .status-bar {
     height: 30px;
     background: #000;

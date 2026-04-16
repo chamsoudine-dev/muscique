@@ -62,6 +62,16 @@ class UIController {
             this.dom.libraryView.classList.remove('active');
         });
 
+        // Sampler Pads
+        document.querySelectorAll('.pad').forEach(pad => {
+            pad.addEventListener('mousedown', () => {
+                pad.classList.add('active');
+                engine.triggerSynth(220 + (Math.random() * 440)); // Mock sound
+            });
+            pad.addEventListener('mouseup', () => pad.classList.remove('active'));
+            pad.addEventListener('mouseleave', () => pad.classList.remove('active'));
+        });
+
         window.addEventListener('step-changed', (e) => {
             this.updateGridActiveStep(e.detail.step);
         });
@@ -102,10 +112,12 @@ class UIController {
                 stepsContainer.appendChild(step);
             }
             
-            lane.appendChild(info);
+             lane.appendChild(info);
             lane.appendChild(stepsContainer);
             this.dom.grid.appendChild(lane);
             
+            this.createMixerChannel(name);
+
             // Register track in engine
             engine.tracks.push({
                 steps: trackState.steps,
@@ -115,6 +127,19 @@ class UIController {
                 }
             });
         });
+    }
+
+    createMixerChannel(name) {
+        const chan = document.createElement('div');
+        chan.className = 'mixer-channel';
+        chan.innerHTML = `
+            <div class="channel-name">${name}</div>
+            <div class="fader-box">
+                <input type="range" orient="vertical" value="70">
+            </div>
+            <div class="pan-knob knob" style="width:30px; height:30px;"></div>
+        `;
+        document.getElementById('mixer-channels').appendChild(chan);
     }
 
     updateGridActiveStep(stepIndex) {
