@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>MUSCIQ Studio | Mobile Music Production</title>
+    <meta name="description" content="Studio de production musicale mobile professionnel. Créez des instrus, synthétiseurs et beats directement dans votre navigateur.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body class="dark-theme">
+    <div id="app">
+        <!-- Header / Transport -->
+        <header class="studio-header">
+            <div class="logo">
+                <span class="logo-icon">V</span>
+                <h1>MUSCIQ<span>STUDIO</span></h1>
+            </div>
+            <div class="transport-controls">
+                <button id="play-btn" class="ctrl-btn" title="Play/Stop">
+                    <svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+                </button>
+                <div class="tempo-control">
+                    <label for="bpm-input">BPM</label>
+                    <input type="number" id="bpm-input" value="120" min="40" max="240">
+                </div>
+            </div>
+            <div class="header-actions">
+                <button id="learn-btn" class="action-btn secondary">Bibliothèque</button>
+                <button id="save-btn" class="action-btn primary">Enregistrer</button>
+            </div>
+        </header>
+
+        <main class="studio-container">
+            <!-- Sidebar: Modules selection -->
+            <aside class="module-sidebar">
+                <nav>
+                    <button class="nav-item active" data-view="sequencer">
+                        <i class="icon-grid"></i>
+                        <span>Séquenceur</span>
+                    </button>
+                    <button class="nav-item" data-view="synth">
+                        <i class="icon-synth"></i>
+                        <span>Synthétiseur</span>
+                    </button>
+                    <button class="nav-item" data-view="sampler">
+                        <i class="icon-drum"></i>
+                        <span>Drum Kit</span>
+                    </button>
+                    <button class="nav-item" data-view="fx">
+                        <i class="icon-fx"></i>
+                        <span>Effets Rack</span>
+                    </button>
+                </nav>
+            </aside>
+
+            <!-- Main Workspace -->
+            <section class="workspace">
+                <div id="view-sequencer" class="view active">
+                    <div class="view-header">
+                        <h2>Séquenceur de Patterns</h2>
+                        <div class="view-tools">
+                            <button class="tool-btn" id="add-track">+ Ajouter Piste</button>
+                        </div>
+                    </div>
+                    <div id="sequencer-grid" class="grid-container">
+                        <!-- Tracks will be generated here -->
+                    </div>
+                </div>
+
+                <div id="view-synth" class="view">
+                    <div class="synth-engine">
+                        <div class="visualizer-container">
+                            <canvas id="oscilloscope"></canvas>
+                        </div>
+                        <div class="controls-grid">
+                            <!-- OSC Controls -->
+                            <div class="control-group">
+                                <h3>Oscillateur</h3>
+                                <div class="knob-row">
+                                    <div class="knob-container">
+                                        <div class="knob" id="osc-wave"></div>
+                                        <span>Wave</span>
+                                    </div>
+                                    <div class="knob-container">
+                                        <div class="knob" id="osc-detune"></div>
+                                        <span>Detune</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- Envelope Controls -->
+                            <div class="control-group">
+                                <h3>Enveloppe (ADSR)</h3>
+                                <div class="sliders">
+                                    <div class="slider-box"><input type="range" orient="vertical" id="env-a"><span>A</span></div>
+                                    <div class="slider-box"><input type="range" orient="vertical" id="env-d"><span>D</span></div>
+                                    <div class="slider-box"><input type="range" orient="vertical" id="env-s"><span>S</span></div>
+                                    <div class="slider-box"><input type="range" orient="vertical" id="env-r"><span>R</span></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="keyboard-container">
+                            <div id="piano-roll"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Learning Module (The Book) -->
+                <div id="view-library" class="view overlay">
+                    <div class="modal-content">
+                        <header>
+                            <h2>Théorie & Construction Musicale</h2>
+                            <button class="close-modal">&times;</button>
+                        </header>
+                        <div class="library-body">
+                            <article class="lesson">
+                                <h3>1. La Physique du Son</h3>
+                                <p>Pour construire un instrument, il faut comprendre le triangle : **Source -> Résonateur -> Diffuseur**.</p>
+                                <ul>
+                                    <li><strong>Source :</strong> L'endroit où l'énergie est créée (corde frappée, souffle). En synthèse, c'est l'<strong>Oscillateur</strong>.</li>
+                                    <li><strong>Résonateur :</strong> Le corps qui amplifie et sculpte les harmoniques. En synthèse, c'est le <strong>Filtre</strong>.</li>
+                                    <li><strong>Diffuseur :</strong> La surface qui transmet l'air vers l'oreille.</li>
+                                </ul>
+                            </article>
+                            <article class="lesson">
+                                <h3>2. La Synthèse Soustractive</h3>
+                                <p>C'est la méthode la plus utilisée dans ce studio. On part d'un son riche (Scie, Carré) et on "soustrait" des fréquences avec un filtre.</p>
+                                <ul>
+                                    <li><strong>LFO :</strong> Un oscillateur lent qui module d'autres paramètres (Vibrato).</li>
+                                    <li><strong>ADSR :</strong> L'enveloppe qui définit comment le volume évolue (Attaque, Déclin, Soutien, Relâchement).</li>
+                                </ul>
+                            </article>
+                            <article class="lesson">
+                                <h3>3. Construction d'un Beat</h3>
+                                <p>Le rythme est le squelette de votre musique. La structure classique "Four-on-the-floor" utilise un Kick sur chaque temps (1, 5, 9, 13 dans le séquenceur).</p>
+                            </article>
+                            <!-- More content will be added -->
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <!-- Status Bar -->
+        <footer class="status-bar">
+            <div class="cpu-usage">CPU: 2%</div>
+            <div class="audio-engine-status">Moteur: Prêt</div>
+        </footer>
+    </div>
+
+    <!-- Initialization overlay -->
+    <div id="boot-screen">
+        <div class="loader">
+            <div class="glitch" data-text="MUSCIQ">MUSCIQ</div>
+            <p>Initialisation du studio...</p>
+            <button id="start-engine">COMMENCER</button>
+        </div>
+    </div>
+
+    <script src="js/audio-engine.js" type="module"></script>
+    <script src="js/ui-controller.js" type="module"></script>
+</body>
+</html>

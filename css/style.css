@@ -1,0 +1,422 @@
+:root {
+    --bg-deep: #05050a;
+    --bg-surface: #11111d;
+    --bg-accent: #1a1a2e;
+    --primary: #7c4dff;
+    --primary-glow: rgba(124, 77, 255, 0.4);
+    --secondary: #00e5ff;
+    --secondary-glow: rgba(0, 229, 255, 0.3);
+    --text-main: #e0e0e0;
+    --text-dim: #888899;
+    --glass: rgba(255, 255, 255, 0.05);
+    --glass-border: rgba(255, 255, 255, 0.1);
+    --grid-size: 40px;
+    --header-height: 60px;
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    -webkit-tap-highlight-color: transparent;
+}
+
+body {
+    font-family: 'Outfit', sans-serif;
+    background-color: var(--bg-deep);
+    color: var(--text-main);
+    overflow: hidden; /* No scroll for DAW feel */
+    height: 100vh;
+    width: 100vw;
+}
+
+#app {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+/* --- Header & Transport --- */
+.studio-header {
+    height: var(--header-height);
+    background: var(--bg-surface);
+    border-bottom: 1px solid var(--glass-border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 20px;
+    z-index: 100;
+}
+
+.logo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.logo-icon {
+    width: 32px;
+    height: 32px;
+    background: linear-gradient(135deg, var(--primary), var(--secondary));
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 800;
+    color: white;
+}
+
+.logo h1 {
+    font-size: 1.2rem;
+    font-weight: 800;
+    letter-spacing: 2px;
+}
+
+.logo h1 span {
+    font-weight: 300;
+    color: var(--primary);
+}
+
+.transport-controls {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    background: var(--bg-accent);
+    padding: 5px 15px;
+    border-radius: 50px;
+}
+
+.ctrl-btn {
+    background: none;
+    border: none;
+    color: white;
+    cursor: pointer;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+}
+
+.ctrl-btn:hover {
+    background: var(--glass);
+    color: var(--secondary);
+}
+
+.tempo-control {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.8rem;
+}
+
+.tempo-control input {
+    background: black;
+    border: 1px solid var(--glass-border);
+    color: var(--secondary);
+    width: 50px;
+    text-align: center;
+    padding: 2px;
+    border-radius: 4px;
+}
+
+/* --- Layout --- */
+.studio-container {
+    display: flex;
+    flex: 1;
+    overflow: hidden;
+}
+
+.module-sidebar {
+    width: 70px;
+    background: var(--bg-surface);
+    border-right: 1px solid var(--glass-border);
+    padding-top: 20px;
+}
+
+.nav-item {
+    width: 100%;
+    aspect-ratio: 1;
+    background: none;
+    border: none;
+    color: var(--text-dim);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+    font-size: 0.6rem;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.nav-item i {
+    font-size: 1.2rem;
+    margin-bottom: 2px;
+}
+
+.nav-item.active {
+    color: var(--secondary);
+    background: var(--glass);
+    border-left: 3px solid var(--secondary);
+}
+
+.workspace {
+    flex: 1;
+    position: relative;
+    background: radial-gradient(circle at center, #1a1a2e 0%, #05050a 100%);
+    overflow-y: auto;
+}
+
+/* --- Views --- */
+.view {
+    display: none;
+    width: 100%;
+    height: 100%;
+    padding: 20px;
+}
+
+.view.active {
+    display: block;
+    animation: fadeIn 0.4s ease-out;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* --- Grid / Sequencer --- */
+.grid-container {
+    margin-top: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    padding-bottom: 100px;
+}
+
+.track-lane {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.track-info {
+    width: 120px;
+    font-size: 0.8rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.steps {
+    display: flex;
+    gap: 2px;
+}
+
+.step {
+    width: 24px;
+    height: 36px;
+    background: var(--bg-accent);
+    border-radius: 3px;
+    cursor: pointer;
+}
+
+.step.active {
+    background: var(--primary);
+    box-shadow: 0 0 10px var(--primary-glow);
+}
+
+.step:nth-child(4n) { margin-right: 4px; }
+
+.knob-row {
+    display: flex;
+    justify-content: space-around;
+    padding: 10px 0;
+}
+
+.knob-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.7rem;
+    color: var(--text-dim);
+}
+
+.knob {
+    width: 50px;
+    height: 50px;
+    background: conic-gradient(from 180deg, var(--bg-deep), var(--primary), var(--bg-deep));
+    border-radius: 50%;
+    border: 3px solid var(--bg-surface);
+    box-shadow: 0 4px 10px rgba(0,0,0,0.5), inset 0 2px 5px rgba(255,255,255,0.1);
+    position: relative;
+}
+
+.knob::after {
+    content: '';
+    position: absolute;
+    top: 5px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 4px;
+    height: 10px;
+    background: var(--secondary);
+    border-radius: 2px;
+    box-shadow: 0 0 5px var(--secondary-glow);
+}
+.synth-engine {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+.visualizer-container {
+    height: 150px;
+    background: rgba(0,0,0,0.3);
+    border-radius: 12px;
+    margin-bottom: 20px;
+    border: 1px solid var(--glass-border);
+}
+
+#oscilloscope {
+    width: 100%;
+    height: 100%;
+}
+
+.controls-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 20px;
+}
+
+.control-group {
+    background: var(--glass);
+    border: 1px solid var(--glass-border);
+    padding: 15px;
+    border-radius: 12px;
+}
+
+.control-group h3 {
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 15px;
+    color: var(--secondary);
+}
+
+.sliders {
+    display: flex;
+    justify-content: space-around;
+    height: 100px;
+}
+
+.slider-box {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    font-size: 0.7rem;
+}
+
+input[type=range][orient=vertical] {
+    writing-mode: bt-lr; /* IE */
+    -webkit-appearance: slider-vertical; /* WebKit */
+    width: 8px;
+    height: 100%;
+    padding: 0 5px;
+}
+
+/* --- Boot Screen --- */
+#boot-screen {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    background: var(--bg-deep);
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+}
+
+.glitch {
+    font-size: 4rem;
+    font-weight: 900;
+    position: relative;
+    color: white;
+    letter-spacing: 5px;
+}
+
+#start-engine {
+    margin-top: 30px;
+    padding: 15px 40px;
+    background: linear-gradient(135deg, var(--primary), var(--secondary));
+    border: none;
+    border-radius: 50px;
+    color: white;
+    font-weight: bold;
+    cursor: pointer;
+    box-shadow: 0 0 20px var(--primary-glow);
+    transition: transform 0.2s;
+}
+
+#start-engine:active { transform: scale(0.95); }
+
+/* --- Library Modal --- */
+.view.overlay {
+    position: absolute;
+    top: 0; left: 0;
+    background: rgba(0,0,0,0.85);
+    backdrop-filter: blur(10px);
+    z-index: 200;
+    padding: 40px;
+    display: none;
+}
+
+.view.overlay.active { display: flex; align-items: center; justify-content: center; }
+
+.modal-content {
+    background: var(--bg-surface);
+    width: 100%;
+    max-width: 800px;
+    max-height: 80vh;
+    border-radius: 20px;
+    border: 1px solid var(--glass-border);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.modal-content header {
+    padding: 20px;
+    border-bottom: 1px solid var(--glass-border);
+    display: flex;
+    justify-content: space-between;
+}
+
+.library-body {
+    padding: 30px;
+    overflow-y: auto;
+    line-height: 1.6;
+}
+
+.lesson h3 { color: var(--secondary); margin-bottom: 10px; }
+.lesson p { margin-bottom: 15px; }
+
+/* Status Bar */
+.status-bar {
+    height: 30px;
+    background: #000;
+    border-top: 1px solid var(--glass-border);
+    padding: 0 15px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 0.7rem;
+    color: var(--text-dim);
+}
